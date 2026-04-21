@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALPHA-1 STUDIO: ARCHITECTURAL BLUEPRINT</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@600;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   ROOT & RESET
+═══════════════════════════════════════════════════════════ */
+:root {
+  --bg:        #06090d;
+  --paper:     #080c12;
+  --grid-col:  rgba(30,160,255,0.055);
+  --grid-col2: rgba(30,160,255,0.022);
+  --zone:      rgba(30,160,255,0.10);
+  --zone-b:    rgba(30,160,255,0.22);
+  --zone-b2:   rgba(30,160,255,0.38);
+  --accent:    #1ea0ff;
+  --teal:      #00e5cc;
+  --yellow:    #f5d020;
+  --green:     #00ff88;
+  --red:       #ff3c5a;
+  --orange:    #ff8800;
+  --dim:       rgba(30,160,255,0.35);
+  --text:      #9dbfd4;
+  --bright:    #ddeeff;
+  --mono:      'Share Tech Mono', monospace;
+  --display:   'Orbitron', monospace;
+  --ui:        'Rajdhani', sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;min-height:100vh;background:var(--bg);}
+body{
+  font-family:var(--ui);
+  color:var(--text);
+  overflow-x:hidden;
+  cursor:crosshair;
+}
+
+/* Blueprint grid */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(var(--grid-col) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid-col) 1px,transparent 1px),
+    linear-gradient(var(--grid-col2) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid-col2) 1px,transparent 1px);
+  background-size:100px 100px,100px 100px,20px 20px,20px 20px;
+  pointer-events:none;z-index:0;
+}
+/* Scanlines */
+body::after{
+  content:'';
+  position:fixed;inset:0;
+  background:repeating-linear-gradient(
+    0deg,transparent,transparent 3px,rgba(0,0,0,0.04) 3px,rgba(0,0,0,0.04) 4px
+  );
+  pointer-events:none;z-index:1;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LAYOUT SHELL
+═══════════════════════════════════════════════════════════ */
+.blueprint{
+  position:relative;z-index:2;
+  padding:20px 22px 32px;
+  min-height:100vh;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TITLE HEADER — exactly like the image
+═══════════════════════════════════════════════════════════ */
+.bp-title{
+  text-align:center;
+  padding:14px 0 10px;
+  border-bottom:1px solid var(--zone-b);
+  margin-bottom:18px;
+  position:relative;
+}
+.bp-title h1{
+  font-family:var(--display);
+  font-size:clamp(14px,2.8vw,26px);
+  font-weight:900;
+  color:var(--yellow);
+  letter-spacing:3px;
+  text-shadow:0 0 40px rgba(245,208,32,0.4);
+}
+.bp-title h1 span{color:var(--bright);}
+.bp-title .meta{
+  font-family:var(--mono);
+  font-size:9px;
+  color:var(--dim);
+  letter-spacing:3px;
+  margin-top:4px;
+}
+.live-badge{
+  position:absolute;right:0;top:50%;transform:translateY(-50%);
+  display:flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:2px;
+}
+.live-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--green);box-shadow:0 0 8px var(--green);
+  animation:blink 1.8s infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ═══════════════════════════════════════════════════════════
+   ZONES — dashed rectangle sections like the image
+═══════════════════════════════════════════════════════════ */
+.zone{
+  border:1px dashed var(--zone-b);
+  background:rgba(6,15,26,0.7);
+  position:relative;
+  padding:0;
+}
+.zone-label{
+  position:absolute;
+  top:-10px;left:12px;
+  font-family:var(--mono);
+  font-size:9px;
+  color:var(--accent);
+  background:var(--bg);
+  padding:0 6px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.zone-label.yellow{color:var(--yellow);}
+.zone-label.teal{color:var(--teal);}
+.zone-label.green{color:var(--green);}
+
+/* Zone corner marks */
+.zone::before,.zone::after{
+  content:'';
+  position:absolute;
+  width:8px;height:8px;
+}
+.zone::before{bottom:0;right:0;border-bottom:1px solid var(--zone-b2);border-right:1px solid var(--zone-b2);}
+.zone::after{top:0;left:0;border-top:1px solid var(--zone-b2);border-left:1px solid var(--zone-b2);}
+
+/* ═══════════════════════════════════════════════════════════
+   MAIN GRID — 3-column like blueprint
+═══════════════════════════════════════════════════════════ */
+.bp-grid{
+  display:grid;
+  grid-template-columns:1fr 1.15fr 0.95fr;
+  grid-template-rows:auto auto;
+  gap:20px;
+}
+.col-l{display:flex;flex-direction:column;gap:18px;}
+.col-m{display:flex;flex-direction:column;gap:18px;}
+.col-r{display:flex;flex-direction:column;gap:18px;}
+
+/* ═══════════════════════════════════════════════════════════
+   SERVICE BLOCK — inside a zone
+═══════════════════════════════════════════════════════════ */
+.svc-block{
+  padding:12px 12px 10px;
+}
+.svc-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:8px;
+}
+.svc-name{
+  font-family:var(--display);
+  font-size:11px;font-weight:600;
+  color:var(--bright);letter-spacing:1.5px;
+}
+.svc-status{
+  display:flex;align-items:center;gap:5px;
+  font-family:var(--mono);font-size:8px;letter-spacing:1px;
+}
+.sdot{width:6px;height:6px;border-radius:50%;}
+.s-online .sdot{background:var(--green);box-shadow:0 0 7px var(--green);animation:blink 2s infinite;}
+.s-offline .sdot{background:var(--red);}
+.s-degraded .sdot{background:var(--orange);}
+.s-timeout .sdot{background:var(--orange);animation:blink .8s infinite;}
+.s-github .sdot{background:var(--dim);}
+.s-online .slabel{color:var(--green);}
+.s-offline .slabel{color:var(--red);}
+.s-degraded .slabel{color:var(--orange);}
+.s-timeout .slabel{color:var(--orange);}
+.s-github .slabel{color:var(--dim);}
+
+/* Code block — like image */
+.code-block{
+  background:rgba(0,0,0,0.55);
+  border:1px solid rgba(30,160,255,0.12);
+  border-left:2px solid var(--accent);
+  padding:7px 9px;
+  font-family:var(--mono);
+  font-size:9px;
+  line-height:1.7;
+  color:var(--text);
+  margin-bottom:8px;
+  overflow:hidden;
+}
+.code-block .k{color:var(--accent);}        /* keyword / key */
+.code-block .v{color:var(--teal);}          /* value / url */
+.code-block .c{color:var(--dim);}           /* comment */
+.code-block .g{color:var(--green);}         /* green */
+.code-block .y{color:var(--yellow);}        /* yellow */
+.code-block .r{color:var(--red);}           /* red/alert */
+
+/* Stack pills */
+.pills{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px;}
+.pill{
+  font-family:var(--mono);font-size:8px;
+  padding:2px 5px;border:1px solid;letter-spacing:.5px;
+}
+.pill-b{border-color:rgba(30,160,255,.3);color:var(--accent);background:rgba(30,160,255,.05);}
+.pill-t{border-color:rgba(0,229,204,.3);color:var(--teal);background:rgba(0,229,204,.05);}
+.pill-g{border-color:rgba(0,255,136,.3);color:var(--green);background:rgba(0,255,136,.05);}
+.pill-y{border-color:rgba(245,208,32,.3);color:var(--yellow);background:rgba(245,208,32,.05);}
+.pill-r{border-color:rgba(255,60,90,.3);color:var(--red);background:rgba(255,60,90,.05);}
+
+/* Latency meter */
+.lat-row{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:8px;color:var(--dim);
+  margin-top:6px;
+}
+.lat-bar{
+  flex:1;height:3px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(30,160,255,.1);
+  overflow:hidden;
+}
+.lat-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--accent),var(--teal));
+  transition:width 1.2s ease;
+}
+.lat-fill.warn{background:linear-gradient(90deg,var(--orange),var(--yellow));}
+.lat-fill.crit{background:linear-gradient(90deg,var(--red),var(--orange));}
+.lat-val{color:var(--teal);white-space:nowrap;}
+
+/* ═══════════════════════════════════════════════════════════
+   ARROW LABELS — like the image flow arrows
+═══════════════════════════════════════════════════════════ */
+.arrow-label{
+  display:flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:9px;color:var(--dim);
+  margin:6px 0;padding:4px 8px;
+  border-top:1px dashed rgba(30,160,255,0.12);
+  border-bottom:1px dashed rgba(30,160,255,0.12);
+}
+.arrow-label::before{content:'→';color:var(--accent);}
+.arrow-label span{color:var(--text);}
+
+/* ═══════════════════════════════════════════════════════════
+   CENTRAL HUB — the "brain" server section
+═══════════════════════════════════════════════════════════ */
+.hub-zone{
+  border:1px dashed var(--zone-b2);
+  background:rgba(0,6,16,0.85);
+  padding:14px;
+  position:relative;
+}
+.hub-zone::before,.hub-zone::after{
+  width:12px;height:12px;
+}
+.hub-title{
+  font-family:var(--display);
+  font-size:10px;font-weight:900;
+  color:var(--yellow);letter-spacing:3px;
+  text-align:center;
+  margin-bottom:12px;
+  text-shadow:0 0 20px rgba(245,208,32,0.3);
+}
+.hub-diagram{
+  position:relative;
+  height:140px;
+  display:flex;align-items:center;justify-content:center;
+}
+.hub-center{
+  position:absolute;
+  width:68px;height:68px;
+  border:1px solid var(--zone-b2);
+  border-radius:50%;
+  background:rgba(0,20,40,0.9);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  box-shadow:0 0 30px rgba(30,160,255,0.15),inset 0 0 20px rgba(30,160,255,0.05);
+  z-index:2;
+}
+.hub-center-label{
+  font-family:var(--display);font-size:7px;color:var(--accent);
+  letter-spacing:1px;text-align:center;line-height:1.4;
+}
+.hub-ring{
+  position:absolute;
+  width:120px;height:120px;
+  border:1px dashed rgba(30,160,255,0.2);
+  border-radius:50%;
+  animation:spinRing 20s linear infinite;
+}
+@keyframes spinRing{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.hub-spoke{
+  position:absolute;
+  font-family:var(--mono);font-size:8px;
+  padding:3px 6px;
+  border:1px solid var(--zone-b);
+  background:rgba(0,10,25,0.95);
+  white-space:nowrap;
+  color:var(--text);
+}
+.hub-spoke.top{top:4px;left:50%;transform:translateX(-50%);}
+.hub-spoke.right{right:0;top:50%;transform:translateY(-50%);}
+.hub-spoke.bottom{bottom:4px;left:50%;transform:translateX(-50%);}
+.hub-spoke.left{left:0;top:50%;transform:translateY(-50%);}
+
+/* SVG arrows overlay on hub */
+.hub-svg{position:absolute;inset:0;width:100%;height:100%;z-index:1;}
+
+/* ═══════════════════════════════════════════════════════════
+   EXTERNAL TOOLS PANEL — top right like image
+═══════════════════════════════════════════════════════════ */
+.ext-grid{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:6px;
+}
+.ext-node{
+  border:1px solid var(--zone-b);
+  background:rgba(0,10,22,0.9);
+  padding:8px 6px;
+  text-align:center;
+  position:relative;
+  transition:border-color .2s,background .2s;
+  cursor:default;
+}
+.ext-node:hover{
+  border-color:var(--zone-b2);
+  background:rgba(30,160,255,0.07);
+}
+.ext-node-icon{
+  font-size:16px;margin-bottom:4px;
+  display:block;
+  filter:drop-shadow(0 0 4px rgba(30,160,255,0.3));
+}
+.ext-node-name{
+  font-family:var(--mono);font-size:8px;
+  color:var(--accent);letter-spacing:1px;
+  display:block;
+}
+.ext-node-sub{
+  font-family:var(--mono);font-size:7px;
+  color:var(--dim);display:block;margin-top:2px;
+}
+.ext-node .sdot{
+  position:absolute;top:4px;right:4px;
+  width:5px;height:5px;border-radius:50%;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COMMIT FEED
+═══════════════════════════════════════════════════════════ */
+.commit-feed{padding:10px 12px;}
+.commit-row{
+  display:grid;
+  grid-template-columns:52px 1fr 50px;
+  gap:8px;align-items:start;
+  padding:6px 0;
+  border-bottom:1px solid rgba(30,160,255,0.07);
+  font-family:var(--mono);font-size:9px;
+}
+.commit-row:last-child{border-bottom:none;}
+.chash{
+  color:var(--accent);
+  background:rgba(30,160,255,0.08);
+  border:1px solid rgba(30,160,255,0.2);
+  padding:2px 4px;
+  font-size:8px;letter-spacing:.5px;
+}
+.cmsg{color:var(--text);line-height:1.4;font-size:9px;}
+.crepo{color:var(--dim);font-size:8px;margin-top:2px;}
+.ctime{color:var(--dim);font-size:8px;text-align:right;white-space:nowrap;}
+
+/* ═══════════════════════════════════════════════════════════
+   SUMMARY STRIP
+═══════════════════════════════════════════════════════════ */
+.summary-strip{
+  display:grid;grid-template-columns:repeat(6,1fr);
+  border:1px solid var(--zone-b);
+  background:rgba(0,8,18,0.9);
+  margin-bottom:18px;
+}
+.s-cell{
+  padding:10px 12px;
+  border-right:1px solid var(--zone-b);
+  position:relative;
+}
+.s-cell:last-child{border-right:none;}
+.s-cell::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  opacity:0;transition:opacity .2s;
+}
+.s-cell:hover::before{opacity:.6;}
+.s-key{
+  font-family:var(--mono);font-size:8px;
+  color:var(--dim);letter-spacing:2px;margin-bottom:5px;
+}
+.s-val{
+  font-family:var(--display);font-size:20px;font-weight:600;
+  color:var(--bright);line-height:1;
+}
+.s-val.g{color:var(--green);text-shadow:0 0 12px rgba(0,255,136,.3);}
+.s-val.b{color:var(--accent);text-shadow:0 0 12px rgba(30,160,255,.3);}
+.s-val.y{color:var(--yellow);}
+.s-sub{
+  font-family:var(--mono);font-size:7px;
+  color:var(--dim);margin-top:3px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MONITORING BAND — bottom rotated text like image
+═══════════════════════════════════════════════════════════ */
+.monitor-band{
+  position:fixed;bottom:0;left:0;right:0;
+  height:24px;z-index:10;
+  background:rgba(0,5,12,0.95);
+  border-top:1px solid var(--zone-b);
+  display:flex;align-items:center;
+  overflow:hidden;
+}
+.ticker{
+  display:flex;gap:0;
+  animation:ticker 30s linear infinite;
+  white-space:nowrap;
+}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tick-item{
+  font-family:var(--mono);font-size:9px;
+  color:var(--dim);padding:0 20px;letter-spacing:1px;
+}
+.tick-item .tick-val{color:var(--teal);}
+.tick-item .tick-sep{color:rgba(30,160,255,0.3);margin:0 8px;}
+
+/* ═══════════════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════════════ */
+.bp-footer{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0 36px;
+  border-top:1px solid var(--zone-b);
+  font-family:var(--mono);font-size:9px;color:var(--dim);
+  letter-spacing:1px;margin-top:18px;
+}
+.fp-center{
+  font-family:var(--display);font-size:9px;
+  color:rgba(30,160,255,0.2);letter-spacing:3px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LOADING STATE
+═══════════════════════════════════════════════════════════ */
+.loading{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:200px;gap:12px;
+}
+.loading-bar{
+  width:200px;height:2px;
+  background:rgba(30,160,255,0.1);overflow:hidden;
+}
+.loading-fill{
+  height:100%;background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  animation:loadSlide 1.5s ease infinite;
+}
+@keyframes loadSlide{from{transform:translateX(-100%)}to{transform:translateX(200%)}; }
+.loading-txt{font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:3px;}
+
+/* Error */
+.err-box{
+  border:1px solid rgba(255,60,90,0.3);
+  background:rgba(255,60,90,0.05);
+  padding:12px;font-family:var(--mono);font-size:10px;
+  color:var(--red);letter-spacing:1px;
+  margin:12px 0;
+}
+
+/* Responsive */
+@media(max-width:1100px){
+  .bp-grid{grid-template-columns:1fr 1fr;}
+  .col-r{grid-column:1/-1;}
+}
+@media(max-width:700px){
+  .bp-grid{grid-template-columns:1fr;}
+  .summary-strip{grid-template-columns:repeat(3,1fr);}
+  .ext-grid{grid-template-columns:1fr 1fr;}
+}
+
+/* scrollbar */
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--zone-b);}
+</style>
+</head>
+<body>
+
+<div class="blueprint">
+
+  <!-- TITLE -->
+  <div class="bp-title">
+    <h1>ALPHA-1 STUDIO: <span>ARCHITECTURAL BLUEPRINT</span></h1>
+    <div class="meta">PRODUCTION DEPLOYMENT MONITOR — KUMASI, GHANA — REV 2026.04</div>
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      <span id="clock">--:--:-- UTC</span>
+    </div>
+  </div>
+
+  <!-- SUMMARY STRIP -->
+  <div class="summary-strip" id="summary-strip">
+    <div class="s-cell"><div class="s-key">// SERVICES</div><div class="s-val b" id="s-total">--</div><div class="s-sub">monitored</div></div>
+    <div class="s-cell"><div class="s-key">// ONLINE</div><div class="s-val g" id="s-online">--</div><div class="s-sub">responding</div></div>
+    <div class="s-cell"><div class="s-key">// DEGRADED</div><div class="s-val y" id="s-degraded">--</div><div class="s-sub">slow/warn</div></div>
+    <div class="s-cell"><div class="s-key">// OFFLINE</div><div class="s-val" id="s-offline" style="color:var(--red)">--</div><div class="s-sub">unreachable</div></div>
+    <div class="s-cell"><div class="s-key">// AVG LATENCY</div><div class="s-val b" id="s-latency">--</div><div class="s-sub">milliseconds</div></div>
+    <div class="s-cell"><div class="s-key">// HEALTH</div><div class="s-val g" id="s-health">--%</div><div class="s-sub">overall score</div></div>
+  </div>
+
+  <!-- MAIN BLUEPRINT GRID -->
+  <div class="bp-grid" id="main-grid">
+    <div class="loading" id="loading-state">
+      <div class="loading-txt">FETCHING LIVE DATA...</div>
+      <div class="loading-bar"><div class="loading-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="bp-footer">
+    <div>SYS:ALPHA1 / ENV:PRODUCTION / STACK:VERCEL+RENDER+RAILWAY / ANDROID:TERMUX</div>
+    <div class="fp-center">ALPHA-1 STUDIO</div>
+    <div id="last-refresh">LAST REFRESH: --</div>
+  </div>
+
+</div>
+
+<!-- TICKER -->
+<div class="monitor-band">
+  <div class="ticker" id="ticker">
+    <span class="tick-item">MONITORING ACTIVE<span class="tick-sep">◈</span></span>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CONFIG — change API_BASE to your Render URL after deploy
+// ═══════════════════════════════════════════════════════
+const API_BASE = 'https://alpha1-status-api.onrender.com'; // ← UPDATE THIS
+
+// Fallback / demo data used when API is unreachable
+const FALLBACK = {
+  summary: { total: 6, online: 5, offline: 0, degraded: 1, avg_latency_ms: 312, health_pct: 83 },
+  services: [
+    { id:'aether', name:'AETHER AI', url:'https://aether-pwa.vercel.app', backend:'https://aether-pwa.onrender.com',
+      group:'flagship', host:'vercel+render', stack:['Flask','Python','OpenRouter','Claude API','PWA','Twi NLP'],
+      desc:'Ghana-tuned AI PWA — multi-model, Twi support, low-data mobile-first',
+      status:'online', latency_ms:280,
+      commits:[{sha:'a91f2c1',message:'Full frontend rewrite — space theme + 10 models',date:'2026-04-06T21:18:00Z',repo:'aether-pwa'}],
+      repo_meta:{stars:4,pushed_at:'2026-04-06T21:18:00Z'},
+      vercel_deploys:[{state:'READY',created:1712444280000}]
+    },
+    { id:'gracemanager', name:'GRACEMANAGER', url:'https://gracemanager.onrender.com', backend:null,
+      group:'flagship', host:'render', stack:['Node.js','WebSocket','Three.js','USGS','GDELT','Reddit'],
+      desc:'Real-time global situational awareness — 3D globe, WebSocket streaming',
+      status:'online', latency_ms:440,
+      commits:[{sha:'c4d8f55',message:'GDELT stream stability fix',date:'2026-04-14T10:05:00Z',repo:'gracemanager'}],
+      repo_meta:{stars:2,pushed_at:'2026-04-14T10:05:00Z'},
+      vercel_deploys:[]
+    },
+    { id:'familygamenight', name:'FAMILYGAMENIGHT', url:'https://github.com/alpha-1-design/FamilyGameNight', backend:null,
+      group:'flagship', host:'android', stack:['TypeScript','Capacitor 6','Vite','Web Audio API'],
+      desc:'Android app — 10 game engines, 330+ games',
+      status:'github', latency_ms:null,
+      commits:[{sha:'dd3cfa2',message:'GameScreen full rewrite — ENGINE_MAP routing 330 games',date:'2026-04-20T08:41:00Z',repo:'FamilyGameNight'}],
+      repo_meta:{stars:1,pushed_at:'2026-04-20T08:41:00Z'},
+      vercel_deploys:[]
+    },
+    { id:'toolbox', name:'UNIVERSAL TOOLBOX', url:'https://alpha1studio.vercel.app', backend:null,
+      group:'studio', host:'vercel', stack:['Static','Vercel','No Auth','700+ Tools'],
+      desc:'700+ tools, 54 categories — updated weekly',
+      status:'online', latency_ms:185,
+      commits:[{sha:'b3c2d11',message:'Add 12 new tools — April batch',date:'2026-04-10T12:00:00Z',repo:'universal-toolbox'}],
+      repo_meta:{stars:6,pushed_at:'2026-04-10T12:00:00Z'},
+      vercel_deploys:[{state:'READY',created:1712750400000}]
+    },
+    { id:'privacy', name:'PRIVACY TOOLKIT', url:'https://privacy-toolkit-ten.vercel.app', backend:null,
+      group:'studio', host:'vercel', stack:['Zero-Server','PWA','VirusTotal v3','Heroicons'],
+      desc:'13 browser-based security tools — fully local, no data collection',
+      status:'online', latency_ms:210,
+      commits:[{sha:'f9c3d42',message:'Service worker auto-update + VirusTotal v3 CORS fix',date:'2026-03-22T11:30:00Z',repo:'privacy-toolkit'}],
+      repo_meta:{stars:3,pushed_at:'2026-03-22T11:30:00Z'},
+      vercel_deploys:[{state:'READY',created:1711107000000}]
+    },
+    { id:'rehoboth', name:'REHOBOTH KITCHEN', url:'https://rehoboth-kitchen-app.vercel.app', backend:null,
+      group:'studio', host:'vercel+railway', stack:['React','MongoDB','Cloudinary','Express','Web Push'],
+      desc:'Client PWA — kitchen appliances store with push notifications',
+      status:'degraded', latency_ms:780,
+      commits:[{sha:'e2a1b78',message:'Railway migration complete — push notifs live',date:'2026-03-10T16:55:00Z',repo:'rehoboth-kitchen-app'}],
+      repo_meta:{stars:0,pushed_at:'2026-03-10T16:55:00Z'},
+      vercel_deploys:[{state:'READY',created:1710086100000}]
+    }
+  ],
+  commits_feed: [
+    {sha:'dd3cfa2',message:'GameScreen full rewrite — ENGINE_MAP routing 330 games',date:'2026-04-20T08:41:00Z',repo:'FamilyGameNight'},
+    {sha:'a91f2c1',message:'Add GAME_ICONS.ts — 208 unique SVGs',date:'2026-04-20T06:12:00Z',repo:'FamilyGameNight'},
+    {sha:'7b3e901',message:'Fix PlayersScreen dupe check + Copilot avatar 44px',date:'2026-04-19T14:30:00Z',repo:'FamilyGameNight'},
+    {sha:'c4d8f55',message:'GDELT stream stability + Reddit WebSocket reconnect',date:'2026-04-14T10:05:00Z',repo:'gracemanager'},
+    {sha:'b3c2d11',message:'Add 12 new tools — April batch update',date:'2026-04-10T12:00:00Z',repo:'universal-toolbox'},
+    {sha:'e2a1b78',message:'Aether frontend full rewrite — space theme + 10 models',date:'2026-04-06T21:18:00Z',repo:'aether-pwa'},
+  ]
+};
+
+// ═══════════════════════════════════════════════════════
+// CLOCK
+// ═══════════════════════════════════════════════════════
+function updateClock(){
+  const n=new Date();
+  const p=v=>String(v).padStart(2,'0');
+  document.getElementById('clock').textContent=`${p(n.getUTCHours())}:${p(n.getUTCMinutes())}:${p(n.getUTCSeconds())} UTC`;
+}
+setInterval(updateClock,1000);updateClock();
+
+// ═══════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════
+function timeAgo(iso){
+  if(!iso)return '—';
+  const diff=Math.floor((Date.now()-new Date(iso))/1000);
+  if(diff<60)return `${diff}s ago`;
+  if(diff<3600)return `${Math.floor(diff/60)}m ago`;
+  if(diff<86400)return `${Math.floor(diff/3600)}h ago`;
+  return `${Math.floor(diff/86400)}d ago`;
+}
+function latClass(ms){
+  if(!ms)return '';
+  if(ms<400)return '';
+  if(ms<800)return 'warn';
+  return 'crit';
+}
+function latPct(ms){
+  if(!ms)return 0;
+  return Math.min(100,Math.round((ms/2000)*100));
+}
+function statusClass(s){
+  return `s-${s||'offline'}`;
+}
+function statusLabel(s){
+  const map={online:'ONLINE',offline:'OFFLINE',degraded:'DEGRADED',timeout:'TIMEOUT',github:'GITHUB'};
+  return map[s]||'UNKNOWN';
+}
+
+// ═══════════════════════════════════════════════════════
+// BUILD SERVICE BLOCK
+// ═══════════════════════════════════════════════════════
+function buildServiceBlock(svc){
+  const lastCommit = svc.commits && svc.commits[0];
+  const lastDeploy = svc.vercel_deploys && svc.vercel_deploys[0];
+  const pushed     = svc.repo_meta && svc.repo_meta.pushed_at;
+
+  const stackHTML = (svc.stack||[]).map((t,i)=>{
+    const cls=['pill-b','pill-t','pill-g','pill-y'][i%4];
+    return `<span class="pill ${cls}">${t}</span>`;
+  }).join('');
+
+  const lat = svc.latency_ms;
+  const deployState = lastDeploy ? lastDeploy.state : null;
+  const deployIcon  = deployState==='READY'?'<span style="color:var(--green)">●</span>':
+                      deployState==='ERROR' ?'<span style="color:var(--red)">●</span>':'';
+
+  return `
+  <div class="zone" style="margin-bottom:0">
+    <div class="zone-label">${svc.group==='flagship'?'FLAGSHIP':'STUDIO'} / ${svc.host.toUpperCase()}</div>
+    <div class="svc-block">
+      <div class="svc-header">
+        <div class="svc-name">${svc.name}</div>
+        <div class="svc-status ${statusClass(svc.status)}">
+          <div class="sdot"></div>
+          <div class="slabel">${statusLabel(svc.status)}</div>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <span class="c">// ${svc.desc}</span><br>
+        <span class="k">URL</span>  <span class="v">${svc.url.replace('https://','')}</span><br>
+        ${svc.backend?`<span class="k">API</span>  <span class="v">${svc.backend.replace('https://','')}</span><br>`:''}
+        <span class="k">PUSH</span> <span class="g">${pushed?timeAgo(pushed):'—'}</span>
+        ${lastCommit?`<span class="c"> // ${lastCommit.sha}</span>`:''}
+        <br>
+        ${deployState?`<span class="k">VERCEL</span> ${deployIcon} <span class="${deployState==='READY'?'g':'r'}">${deployState}</span>`:''}
+        ${lat?`<span class="k" style="margin-left:${deployState?'8px':'0'}">LATENCY</span> <span class="${lat>800?'r':lat>400?'y':'g'}">${lat}ms</span>`:''}
+      </div>
+
+      ${lat ? `
+      <div class="lat-row">
+        <span>RTT</span>
+        <div class="lat-bar"><div class="lat-fill ${latClass(lat)}" style="width:${latPct(lat)}%"></div></div>
+        <span class="lat-val">${lat}ms</span>
+      </div>` : `
+      <div class="arrow-label"><span>ANDROID BUILD / GITHUB REPO</span></div>
+      `}
+
+      <div class="pills">${stackHTML}</div>
+
+      ${lastCommit ? `
+      <div class="arrow-label" style="margin-top:8px;font-size:8px">
+        <span style="color:var(--accent)">${lastCommit.sha}</span>
+        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-left:4px">${lastCommit.message}</span>
+      </div>` : ''}
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// BUILD EXTERNAL TOOLS PANEL
+// ═══════════════════════════════════════════════════════
+const EXT_TOOLS = [
+  {name:'VERCEL',      sub:'4 frontends',  icon:'▲', status:'online',  color:'var(--teal)'},
+  {name:'RENDER',      sub:'2 backends',   icon:'◈', status:'online',  color:'var(--accent)'},
+  {name:'RAILWAY',     sub:'1 backend',    icon:'⬡', status:'online',  color:'var(--yellow)'},
+  {name:'GITHUB',      sub:'alpha-1-design',icon:'◎',status:'online',  color:'var(--text)'},
+  {name:'OPENROUTER',  sub:'10 models',    icon:'⬡', status:'online',  color:'var(--green)'},
+  {name:'CLOUDINARY',  sub:'media CDN',    icon:'◈', status:'online',  color:'#ff9966'},
+  {name:'USGS API',    sub:'seismic feed', icon:'◈', status:'online',  color:'var(--orange)'},
+  {name:'GDELT',       sub:'global events',icon:'◈', status:'online',  color:'var(--teal)'},
+  {name:'CLAUDE API',  sub:'anthropic',    icon:'◈', status:'online',  color:'var(--accent)'},
+];
+
+function buildExtTools(){
+  return EXT_TOOLS.map(t=>`
+  <div class="ext-node">
+    <div class="sdot s-${t.status}" style="position:absolute;top:4px;right:4px;
+      background:${t.status==='online'?'var(--green)':'var(--red)'};
+      ${t.status==='online'?'box-shadow:0 0 6px var(--green);animation:blink 2s infinite;':''}"></div>
+    <span class="ext-node-icon" style="color:${t.color}">${t.icon}</span>
+    <span class="ext-node-name" style="color:${t.color}">${t.name}</span>
+    <span class="ext-node-sub">${t.sub}</span>
+  </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// BUILD COMMIT FEED
+// ═══════════════════════════════════════════════════════
+function buildCommitFeed(commits){
+  if(!commits||!commits.length) return '<div style="padding:12px;font-family:var(--mono);font-size:9px;color:var(--dim)">NO COMMITS FETCHED</div>';
+  return commits.slice(0,8).map(c=>`
+  <div class="commit-row">
+    <span class="chash">${c.sha}</span>
+    <div>
+      <div class="cmsg">${c.message.slice(0,70)}${c.message.length>70?'…':''}</div>
+      <div class="crepo">${c.repo||''}</div>
+    </div>
+    <div class="ctime">${timeAgo(c.date)}</div>
+  </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER FULL BLUEPRINT
+// ═══════════════════════════════════════════════════════
+function renderBlueprint(data){
+  const svcs    = data.services||[];
+  const flagship= svcs.filter(s=>s.group==='flagship');
+  const studio  = svcs.filter(s=>s.group==='studio');
+  const commits = data.commits_feed||[];
+
+  document.getElementById('main-grid').innerHTML = `
+
+  <!-- LEFT COLUMN — FLAGSHIP -->
+  <div class="col-l">
+    <div class="zone">
+      <div class="zone-label yellow">THE FLAGSHIP PROJECTS (BODY)</div>
+      <div style="padding:14px;display:flex;flex-direction:column;gap:12px;">
+        ${flagship.map(buildServiceBlock).join('')}
+      </div>
+    </div>
+  </div>
+
+  <!-- MIDDLE COLUMN — BRAIN + STUDIO -->
+  <div class="col-m">
+
+    <!-- Hub diagram -->
+    <div class="zone hub-zone">
+      <div class="zone-label teal">THE INFRASTRUCTURE (BRAIN)</div>
+      <div class="hub-title">ALPHA-1 STUDIO / CLOUD FABRIC</div>
+      <div class="hub-diagram">
+        <svg class="hub-svg" viewBox="0 0 320 140" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <marker id="a1" markerWidth="5" markerHeight="5" refX="5" refY="2.5" orient="auto">
+              <path d="M0,0 L5,2.5 L0,5 Z" fill="rgba(30,160,255,0.5)"/>
+            </marker>
+            <marker id="a2" markerWidth="5" markerHeight="5" refX="5" refY="2.5" orient="auto">
+              <path d="M0,0 L5,2.5 L0,5 Z" fill="rgba(0,229,204,0.5)"/>
+            </marker>
+          </defs>
+          <!-- Spokes to center -->
+          <line x1="50" y1="20" x2="148" y2="65" stroke="rgba(30,160,255,0.25)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#a1)"/>
+          <line x1="270" y1="20" x2="172" y2="65" stroke="rgba(0,229,204,0.25)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#a2)"/>
+          <line x1="50" y1="120" x2="148" y2="80" stroke="rgba(30,160,255,0.2)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#a1)"/>
+          <line x1="270" y1="120" x2="172" y2="80" stroke="rgba(0,229,204,0.2)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#a2)"/>
+          <!-- Labels on lines -->
+          <text x="88" y="40" font-family="Share Tech Mono" font-size="7" fill="rgba(30,160,255,0.4)">HTTPS</text>
+          <text x="188" y="40" font-family="Share Tech Mono" font-size="7" fill="rgba(0,229,204,0.4)">API CALLS</text>
+          <text x="75" y="108" font-family="Share Tech Mono" font-size="7" fill="rgba(30,160,255,0.4)">DEPLOY</text>
+          <text x="188" y="108" font-family="Share Tech Mono" font-size="7" fill="rgba(0,229,204,0.4)">STREAM</text>
+        </svg>
+        <div class="hub-ring"></div>
+        <div class="hub-center">
+          <div class="hub-center-label">ALPHA-1<br>STUDIO<br>─────<br>KSI-01</div>
+        </div>
+        <div class="hub-spoke top">▲ VERCEL CDN</div>
+        <div class="hub-spoke right">◈ RENDER</div>
+        <div class="hub-spoke bottom">⬡ RAILWAY</div>
+        <div class="hub-spoke left">◎ GITHUB</div>
+      </div>
+      <div class="code-block" style="margin:0 14px 14px;font-size:8px;">
+        <span class="c">// Real-time data flows</span><br>
+        <span class="k">Vercel</span>  → <span class="v">4 frontends, edge CDN, auto-deploy</span><br>
+        <span class="k">Render</span>  → <span class="v">Flask AI backend + Gracemanager</span><br>
+        <span class="k">Railway</span> → <span class="v">Rehoboth Express + MongoDB</span><br>
+        <span class="k">GitHub</span>  → <span class="v">Actions CI/CD → all platforms</span><br>
+        <span class="k">OpenRouter</span> <span class="g">↔</span> <span class="v">Claude, GPT-4o, Gemini, Llama</span>
+      </div>
+    </div>
+
+    <!-- Studio projects -->
+    <div class="zone">
+      <div class="zone-label">THE STUDIO PRODUCTS</div>
+      <div style="padding:14px;display:flex;flex-direction:column;gap:12px;">
+        ${studio.map(buildServiceBlock).join('')}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN — EXTERNAL + COMMITS -->
+  <div class="col-r">
+
+    <!-- External tools -->
+    <div class="zone">
+      <div class="zone-label teal">EXTERNAL SERVICES &amp; TOOLS</div>
+      <div style="padding:12px;">
+        <div class="ext-grid">${buildExtTools()}</div>
+        <div class="code-block" style="margin-top:10px;font-size:8px;">
+          <span class="c">// Active integrations</span><br>
+          <span class="k">OpenRouter</span> <span class="g">10 models</span> <span class="c">// Claude,GPT-4o,Gemini,Llama,DeepSeek</span><br>
+          <span class="k">USGS</span>       <span class="g">LIVE</span>     <span class="c">// M2.5+ earthquakes, 5min refresh</span><br>
+          <span class="k">GDELT</span>      <span class="g">STREAM</span>   <span class="c">// global events classification</span><br>
+          <span class="k">Cloudinary</span> <span class="g">CDN</span>      <span class="c">// product images, Rehoboth</span><br>
+          <span class="k">VirusTotal</span> <span class="g">v3 API</span>   <span class="c">// file scanning, Privacy Toolkit</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Commit feed -->
+    <div class="zone">
+      <div class="zone-label green">COMMIT FEED / github.com/alpha-1-design</div>
+      <div class="commit-feed">
+        ${buildCommitFeed(commits)}
+      </div>
+    </div>
+
+    <!-- Dev environment -->
+    <div class="zone">
+      <div class="zone-label">DEV ENVIRONMENT / TERMUX</div>
+      <div style="padding:12px;">
+        <div class="code-block" style="font-size:8px;line-height:1.9;">
+          <span class="c">// Android — Termux + zsh</span><br>
+          <span class="k">OS</span>      <span class="v">Android / Termux</span><br>
+          <span class="k">SHELL</span>   <span class="v">zsh + oh-my-zsh</span><br>
+          <span class="k">RUNTIME</span> <span class="v">Node 20, Python 3.12, pip</span><br>
+          <span class="k">DEPLOY</span>  <span class="v">git push → GitHub Actions</span><br>
+          <span class="k">BUILD</span>   <span class="v">vite build / capacitor run</span><br>
+          <span class="k">LOC</span>     <span class="y">Kumasi, Ghana 🇬🇭</span>
+        </div>
+        <div class="arrow-label">
+          <span>TERMUX → GITHUB → VERCEL / RENDER / RAILWAY</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  `;
+
+  // Update summary strip
+  const s = data.summary;
+  document.getElementById('s-total').textContent    = s.total;
+  document.getElementById('s-online').textContent   = s.online;
+  document.getElementById('s-degraded').textContent = s.degraded;
+  document.getElementById('s-offline').textContent  = s.offline;
+  document.getElementById('s-latency').textContent  = s.avg_latency_ms ? `${s.avg_latency_ms}` : '—';
+  document.getElementById('s-health').textContent   = `${s.health_pct}%`;
+
+  // Update ticker
+  buildTicker(data);
+
+  // Refresh label
+  document.getElementById('last-refresh').textContent =
+    `LAST REFRESH: ${new Date().toUTCString().slice(17,25)} UTC`;
+}
+
+// ═══════════════════════════════════════════════════════
+// TICKER
+// ═══════════════════════════════════════════════════════
+function buildTicker(data){
+  const items = [];
+  (data.services||[]).forEach(s=>{
+    const lat = s.latency_ms ? `${s.latency_ms}ms` : 'N/A';
+    items.push(`<span class="tick-item">${s.name}<span class="tick-sep">◈</span><span class="tick-val">${statusLabel(s.status)}</span><span class="tick-sep"> / </span>RTT ${lat}</span>`);
+  });
+  // Duplicate for seamless loop
+  const full = items.join('') + items.join('');
+  document.getElementById('ticker').innerHTML = full;
+}
+
+function statusLabel(s){
+  return {online:'ONLINE',offline:'OFFLINE',degraded:'DEGRADED',timeout:'TIMEOUT',github:'GITHUB'}[s]||'—';
+}
+
+// ═══════════════════════════════════════════════════════
+// FETCH & REFRESH
+// ═══════════════════════════════════════════════════════
+async function fetchData(){
+  try{
+    const r = await fetch(`${API_BASE}/api/status`,{signal:AbortSignal.timeout(12000)});
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    return await r.json();
+  }catch(e){
+    console.warn('API unreachable, using fallback data:',e.message);
+    return FALLBACK;
+  }
+}
+
+async function refresh(){
+  const data = await fetchData();
+  renderBlueprint(data);
+}
+
+// Initial load + auto-refresh every 60s
+refresh();
+setInterval(refresh, 60000);
+</script>
+</body>
+</html>
