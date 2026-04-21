@@ -875,16 +875,28 @@ body::after{
     <div class="conn-panel" id="conn-panel">
       <h4>// CONNECTIONS</h4>
       <div class="conn-field">
-        <label>ngrok / localtunnel URL</label>
+        <label>LOCAL (ngrok/localtunnel)</label>
         <input type="text" id="ngrok_input" placeholder="https://xxx.ngrok.io" value="${ENV_CONFIG.ngrok_url}">
       </div>
       <div class="conn-field">
-        <label>Vercel Token</label>
+        <label>VERCEL</label>
         <input type="password" id="vercel_input" placeholder="v1_xxx..." value="${ENV_CONFIG.vercel_token}">
       </div>
       <div class="conn-field">
-        <label>Render API Key</label>
+        <label>RENDER</label>
         <input type="password" id="render_input" placeholder="rnd_xxx..." value="${ENV_CONFIG.render_token}">
+      </div>
+      <div class="conn-field">
+        <label>RAILWAY</label>
+        <input type="password" id="railway_input" placeholder="RFCxxx..." value="${ENV_CONFIG.railway_token}">
+      </div>
+      <div class="conn-field">
+        <label>CLOUDFLARE</label>
+        <input type="password" id="cloudflare_input" placeholder="cf_xxx...">
+      </div>
+      <div class="conn-field">
+        <label>OPENROUTER</label>
+        <input type="password" id="openrouter_input" placeholder="sk...xxx">
       </div>
       <button id="save_conn" style="width:100%;padding:8px;background:var(--accent);border:none;color:var(--bg);font-family:var(--mono);font-size:9px;cursor:pointer;">SAVE</button>
     </div>
@@ -1511,8 +1523,9 @@ document.getElementById('save_conn').addEventListener('click',function(){
   updateEnvConfig('ngrok_url', document.getElementById('ngrok_input').value);
   updateEnvConfig('vercel_token', document.getElementById('vercel_input').value);
   updateEnvConfig('render_token', document.getElementById('render_input').value);
+  updateEnvConfig('railway_token', document.getElementById('railway_input').value);
   document.getElementById('conn-panel').classList.remove('show');
-  alert('Settings saved!');
+  alert('Connections saved!');
 });
 
 // Morph Button & Views

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'alpha1-status-v2';
+const CACHE_NAME = 'alpha1-status-v3';
 const ASSETS = [
   '/',
   '/index.html',
