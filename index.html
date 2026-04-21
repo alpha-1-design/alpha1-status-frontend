@@ -1476,7 +1476,7 @@ async function fetchAllData(){
 
 async function fetchData(){
   try{
-    const r = await fetch(`${API_BASE}/api/status`,{signal:AbortSignal.timeout(8000)});
+    const r = await fetch(`${API_BASE}/api/status?t=${Date.now()}`,{signal:AbortSignal.timeout(8000)});
     if(!r.ok) throw new Error(`HTTP ${r.status}`);
     return await r.json();
   }catch(e){
