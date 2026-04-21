@@ -754,18 +754,17 @@ body::after{
 /* Tree View - with animated connectors */
 .tree-container{
   display:flex;flex-direction:column;align-items:center;gap:2px;
-  position:relative;padding:20px 0;
+  position:relative;padding:30px 0;
 }
-.tree-svg-lines{
-  position:absolute;inset:0;width:100%;height:100%;pointer-events:none;
+.tree-connector-line{
+  position:absolute;left:50%;top:20px;bottom:20px;width:1px;
+  background:linear-gradient(180deg,var(--accent),var(--teal),var(--accent));
+  background-size:100% 200%;
+  animation:connectorFlow 2s linear infinite;
   z-index:0;
+  opacity:0.4;
 }
-.tree-connector{
-  fill:none;stroke:rgba(30,160,255,0.3);stroke-width:1;
-  stroke-dasharray:4,4;
-  animation:dashMove 1s linear infinite;
-}
-@keyframes dashMove{to{stroke-dashoffset:-8}}
+@keyframes connectorFlow{0%{background-position:0% 0%}100%{background-position:0% 200%}}
 .tree-node{
   position:relative;padding:12px 16px;
   background:var(--paper);border:1px solid var(--zone-b);
@@ -1568,17 +1567,9 @@ async function loadView(view){
   }else if(view === 'tree'){
     const data = await fetchData();
     const svcs = data.services;
-    const total = svcs.length;
-    const w = 280, h = 40 + total * 50;
     const tree = document.getElementById('tree-container');
-    let connectors = '';
-    for(let i=1;i<svcs.length;i++){
-      const y1 = 30 + i*50 - 50;
-      const y2 = 30 + i*50;
-      connectors += `<path class="tree-connector" d="M${w/2},${y1} L${w/2},${y2}" />`;
-    }
     tree.innerHTML = `
-      <svg class="tree-svg-lines" viewBox="0 0 ${w} ${h}">${connectors}</svg>
+      <div class="tree-connector-line"></div>
       ${svcs.map((svc,i) => `
         <div class="tree-node" onclick="this.classList.toggle('collapsed')">
           <span class="tree-dot ${svc.status}"></span><strong>${svc.name}</strong>
