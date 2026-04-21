@@ -1,0 +1,17 @@
+{
+  "name": "Alpha-1 Studio Status",
+  "short_name": "Alpha1 Status",
+  "description": "Production monitoring dashboard for Alpha-1 Studio",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06090d",
+  "theme_color": "#06090d",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

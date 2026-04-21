@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ALPHA-1 STUDIO: ARCHITECTURAL BLUEPRINT</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#06090d">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@600;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════════════════════
@@ -80,6 +83,15 @@ body::after{
   margin-bottom:18px;
   position:relative;
 }
+.refresh-btn{
+  position:absolute;left:0;top:50%;transform:translateY(-50%);
+  background:transparent;border:1px solid var(--zone-b);color:var(--accent);
+  font-size:20px;width:36px;height:36px;border-radius:50%;cursor:pointer;
+  transition:transform .3s,background .2s;
+}
+.refresh-btn:hover{background:rgba(30,160,255,.1);}
+.refresh-btn.spinning{animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:translateY(-50%) rotate(360deg)}}
 .bp-title h1{
   font-family:var(--display);
   font-size:clamp(14px,2.8vw,26px);
@@ -497,6 +509,129 @@ body::after{
 ::-webkit-scrollbar{width:3px;}
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--zone-b);}
+
+/* ═══════════════════════════════════════════════════════════
+   ANIMATIONS & EFFECTS
+ ═══════════════════════════════════════════════════════════ */
+@keyframes fadeSlideIn{
+  from{opacity:0;transform:translateY(20px);}
+  to{opacity:1;transform:translateY(0);}
+}
+@keyframes pulseGlow{
+  0%,100%{box-shadow:0 0 5px var(--accent),0 0 10px rgba(30,160,255,0.3);}
+  50%{box-shadow:0 0 15px var(--accent),0 0 25px rgba(30,160,255,0.5);}
+}
+@keyframes dataFlow{
+  0%{background-position:0% 50%;}
+  100%{background-position:200% 50%;}
+}
+@keyframes scanLine{
+  0%{top:-10%;}
+  100%{top:110%;}
+}
+@keyframes borderPulse{
+  0%,100%{border-color:rgba(30,160,255,0.3);}
+  50%{border-color:rgba(30,160,255,0.7);}
+}
+@keyframes float{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-5px);}
+}
+@keyframes ripple{
+  0%{transform:scale(0.8);opacity:1;}
+  100%{transform:scale(2.5);opacity:0;}
+}
+@keyframes textGlitch{
+  0%,90%,100%{text-shadow:0 0 40px rgba(245,208,32,0.4);}
+  92%{text-shadow:-2px 0 #ff3c5a,2px 0 #00e5cc;}
+  94%{text-shadow:2px 0 #ff3c5a,-2px 0 #00e5cc;}
+}
+@keyframes counterUp{
+  from{opacity:0;transform:translateY(10px) scale(0.8);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+@keyframes wave{
+  0%,100%{transform:translateX(0);}
+  50%{transform:translateX(5px);}
+}
+@keyframes statusPop{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.2);}
+  100%{transform:scale(1);}
+}
+@keyframes gradientShift{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+@keyframes matrixRain{
+  0%{transform:translateY(-100%);opacity:0;}
+  10%{opacity:1;}
+  90%{opacity:1;}
+  100%{transform:translateY(100%);opacity:0;}
+}
+
+/* Apply animations */
+.zone{animation:fadeSlideIn 0.5s ease-out forwards;}
+.zone:nth-child(1){animation-delay:0.1s;}
+.zone:nth-child(2){animation-delay:0.2s;}
+.zone:nth-child(3){animation-delay:0.3s;}
+.zone:nth-child(4){animation-delay:0.4s;}
+
+.svc-block{transition:all 0.3s ease;}
+.svc-block:hover{transform:translateX(5px);border-left-color:var(--accent);}
+
+.s-cell{animation:fadeSlideIn 0.4s ease-out forwards;}
+.s-cell:nth-child(1){animation-delay:0.05s;}
+.s-cell:nth-child(2){animation-delay:0.1s;}
+.s-cell:nth-child(3){animation-delay:0.15s;}
+.s-cell:nth-child(4){animation-delay:0.2s;}
+.s-cell:nth-child(5){animation-delay:0.25s;}
+.s-cell:nth-child(6){animation-delay:0.3s;}
+
+.s-val{animation:counterUp 0.5s ease-out;}
+.s-val.g{animation:pulseGlow 3s infinite;}
+
+.ext-node{transition:all 0.2s ease;}
+.ext-node:hover{transform:scale(1.05);box-shadow:0 0 20px rgba(30,160,255,0.3);}
+
+.commit-row{animation:fadeSlideIn 0.3s ease-out forwards;opacity:0;}
+.commit-row:nth-child(1){animation-delay:0.1s;}
+.commit-row:nth-child(2){animation-delay:0.15s;}
+.commit-row:nth-child(3){animation-delay:0.2s;}
+.commit-row:nth-child(4){animation-delay:0.25s;}
+.commit-row:nth-child(5){animation-delay:0.3s;}
+
+.hub-center{animation:float 4s ease-in-out infinite,pulseGlow 4s infinite;}
+
+.lat-fill{animation:dataFlow 2s linear infinite;background-size:200% 100%;}
+
+.live-dot{position:relative;}
+.live-dot::after{
+  content:'';position:absolute;inset:-5px;border-radius:50%;
+  border:1px solid var(--green);animation:ripple 2s infinite;
+}
+
+.bp-title h1{animation:textGlitch 5s infinite;}
+
+.code-block{position:relative;overflow:hidden;}
+.code-block::before{
+  content:'';position:absolute;left:0;width:100%;height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  animation:scanLine 3s linear infinite;
+}
+
+.zone-label{position:relative;}
+.zone-label::before{
+  content:'';position:absolute;left:0;bottom:0;width:100%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  animation:gradientShift 3s ease infinite;background-size:200% 100%;
+}
+
+.ext-node-icon{transition:transform 0.3s ease;}
+.ext-node:hover .ext-node-icon{transform:scale(1.2) rotate(10deg);}
+
+.s-online .slabel{animation:wave 1s ease-in-out;}
 </style>
 </head>
 <body>
@@ -505,6 +640,7 @@ body::after{
 
   <!-- TITLE -->
   <div class="bp-title">
+    <button class="refresh-btn" id="refresh-btn" title="Refresh Now">↻</button>
     <h1>ALPHA-1 STUDIO: <span>ARCHITECTURAL BLUEPRINT</span></h1>
     <div class="meta">PRODUCTION DEPLOYMENT MONITOR — KUMASI, GHANA — REV 2026.04</div>
     <div class="live-badge">
@@ -922,6 +1058,51 @@ function statusLabel(s){
 }
 
 // ═══════════════════════════════════════════════════════
+// SOUND ALERTS
+// ═══════════════════════════════════════════════════════
+let _prevStatuses = {};
+const alertSound = () => {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.frequency.value = 880;
+  osc.type = 'sine';
+  gain.gain.setValueAtTime(0.3, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+  osc.start(ctx.currentTime);
+  osc.stop(ctx.currentTime + 0.5);
+};
+const recoverySound = () => {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.frequency.value = 523;
+  osc.type = 'sine';
+  gain.gain.setValueAtTime(0.3, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+  osc.start(ctx.currentTime);
+  osc.stop(ctx.currentTime + 0.3);
+};
+
+function checkStatusChanges(services){
+  services.forEach(s => {
+    const prev = _prevStatuses[s.id];
+    if(prev && prev !== s.status){
+      if(s.status === 'offline'){
+        alertSound();
+      }else if(prev === 'offline' && s.status !== 'offline'){
+        recoverySound();
+      }
+    }
+    _prevStatuses[s.id] = s.status;
+  });
+}
+
+// ═══════════════════════════════════════════════════════
 // FETCH & REFRESH
 // ═══════════════════════════════════════════════════════
 async function fetchData(){
@@ -937,12 +1118,27 @@ async function fetchData(){
 
 async function refresh(){
   const data = await fetchData();
+  checkStatusChanges(data.services||[]);
   renderBlueprint(data);
 }
+
+document.getElementById('refresh-btn').addEventListener('click',async function(){
+  this.classList.add('spinning');
+  try{
+    await fetch(`${API_BASE}/api/refresh`,{method:'POST',signal:AbortSignal.timeout(15000)});
+  }catch(e){}
+  await refresh();
+  this.classList.remove('spinning');
+});
 
 // Initial load + auto-refresh every 60s
 refresh();
 setInterval(refresh, 60000);
+
+// Register service worker for PWA
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(e => console.log('SW:',e));
+}
 </script>
 </body>
 </html>
