@@ -632,6 +632,28 @@ body::after{
 .ext-node:hover .ext-node-icon{transform:scale(1.2) rotate(10deg);}
 
 .s-online .slabel{animation:wave 1s ease-in-out;}
+
+/* Connection panel */
+.conn-btn{
+  position:absolute;right:50px;top:50%;transform:translateY(-50%);
+  background:transparent;border:1px solid var(--zone-b);color:var(--accent);
+  font-size:10px;padding:6px 10px;border-radius:4px;cursor:pointer;
+  font-family:var(--mono);letter-spacing:1px;
+}
+.conn-btn:hover{background:rgba(30,160,255,.1);}
+.conn-panel{
+  display:none;position:absolute;right:0;top:60px;z-index:100;
+  width:280px;background:var(--paper);border:1px solid var(--zone-b);
+  padding:12px;border-radius:4px;
+}
+.conn-panel.show{display:block;}
+.conn-panel h4{color:var(--accent);font-size:10px;margin:0 0 10px;font-family:var(--mono);letter-spacing:2px;}
+.conn-field{margin-bottom:10px;}
+.conn-field label{display:block;font-size:8px;color:var(--dim);font-family:var(--mono);margin-bottom:3px;}
+.conn-field input{width:100%;background:var(--bg);border:1px solid var(--zone-b);
+  color:var(--text);padding:6px;font-size:9px;font-family:var(--mono);
+}
+.conn-field input:focus{outline:none;border-color:var(--accent);}
 </style>
 </head>
 <body>
@@ -641,6 +663,23 @@ body::after{
   <!-- TITLE -->
   <div class="bp-title">
     <button class="refresh-btn" id="refresh-btn" title="Refresh Now">↻</button>
+    <button class="conn-btn" id="conn-btn" title="Settings">⚙</button>
+    <div class="conn-panel" id="conn-panel">
+      <h4>// CONNECTIONS</h4>
+      <div class="conn-field">
+        <label>ngrok / localtunnel URL</label>
+        <input type="text" id="ngrok_input" placeholder="https://xxx.ngrok.io" value="${ENV_CONFIG.ngrok_url}">
+      </div>
+      <div class="conn-field">
+        <label>Vercel Token</label>
+        <input type="password" id="vercel_input" placeholder="v1_xxx..." value="${ENV_CONFIG.vercel_token}">
+      </div>
+      <div class="conn-field">
+        <label>Render API Key</label>
+        <input type="password" id="render_input" placeholder="rnd_xxx..." value="${ENV_CONFIG.render_token}">
+      </div>
+      <button id="save_conn" style="width:100%;padding:8px;background:var(--accent);border:none;color:var(--bg);font-family:var(--mono);font-size:9px;cursor:pointer;">SAVE</button>
+    </div>
     <h1>ALPHA-1 STUDIO: <span>ARCHITECTURAL BLUEPRINT</span></h1>
     <div class="meta">PRODUCTION DEPLOYMENT MONITOR — KUMASI, GHANA — REV 2026.04</div>
     <div class="live-badge">
@@ -895,6 +934,19 @@ function buildCommitFeed(commits){
   </div>`).join('');
 }
 
+function buildReposFeed(repos){
+  if(!repos||!repos.length) return '<div style="padding:12px;font-family:var(--mono);font-size:9px;color:var(--dim)">NO REPOS FETCHED</div>';
+  return repos.slice(0,15).map(r=>`
+  <div class="commit-row" style="grid-template-columns:1fr auto auto;">
+    <div>
+      <div class="cmsg" style="font-size:8px;"><a href="${r.url}" target="_blank" style="color:var(--accent);text-decoration:none;">${r.name}</a></div>
+      <div class="crepo">${r.language||'—'}</div>
+    </div>
+    <div style="text-align:right;"><span style="color:var(--yellow)">★</span> ${r.stars}</div>
+    <div class="ctime">${timeAgo(r.pushed_at)}</div>
+  </div>`).join('');
+}
+
 // ═══════════════════════════════════════════════════════
 // RENDER FULL BLUEPRINT
 // ═══════════════════════════════════════════════════════
@@ -997,6 +1049,29 @@ function renderBlueprint(data){
       <div class="zone-label green">COMMIT FEED / github.com/alpha-1-design</div>
       <div class="commit-feed">
         ${buildCommitFeed(commits)}
+      </div>
+    </div>
+
+    <!-- All Repos -->
+    <div class="zone">
+      <div class="zone-label">ALL REPOS / ${(window._allRepos||[]).length} total</div>
+      <div class="commit-feed" id="repos-feed" style="max-height:200px;overflow-y:auto;">
+        ${buildReposFeed(window._allRepos||[])}
+      </div>
+    </div>
+
+    <!-- Connections / External -->
+    <div class="zone">
+      <div class="zone-label teal">CONNECTIONS & EXTERNAL</div>
+      <div style="padding:12px;">
+        <div class="ext-grid" id="connections-grid"></div>
+        <div class="code-block" style="margin-top:10px;font-size:8px;">
+          <span class="c">// External connections</span><br>
+          <span class="k">Local</span>   <span class="g">${ENV_CONFIG.ngrok_url || 'Not connected'}</span><br>
+          <span class="k">GitHub</span> <span class="g">alpha-1-design</span><br>
+          <span class="k">Vercel</span> <span class="y">4 projects</span><br>
+          <span class="k">Render</span> <span class="y">2 services</span>
+        </div>
       </div>
     </div>
 
@@ -1105,6 +1180,28 @@ function checkStatusChanges(services){
 // ═══════════════════════════════════════════════════════
 // FETCH & REFRESH
 // ═══════════════════════════════════════════════════════
+const ENV_CONFIG = {
+  vercel_token: localStorage.getItem('vercel_token') || '',
+  github_token: localStorage.getItem('github_token') || '',
+  render_token: localStorage.getItem('render_token') || '',
+  railway_token: localStorage.getItem('railway_token') || '',
+  ngrok_url: localStorage.getItem('ngrok_url') || ''
+};
+
+const updateEnvConfig = (key, value) => {
+  ENV_CONFIG[key] = value;
+  localStorage.setItem(key, value);
+};
+
+async function fetchAllData(){
+  const [status, repos, metrics] = await Promise.all([
+    fetch(`${API_BASE}/api/status`,{signal:AbortSignal.timeout(12000)}).then(r=>r.json()).catch(()=>FALLBACK),
+    fetch(`${API_BASE}/api/repos`).then(r=>r.json()).catch(()=>({repos:[]})) ,
+    fetch(`${API_BASE}/api/metrics`).then(r=>r.json()).catch(()=>({metrics:[]}))
+  ]);
+  return { status, repos, metrics };
+}
+
 async function fetchData(){
   try{
     const r = await fetch(`${API_BASE}/api/status`,{signal:AbortSignal.timeout(12000)});
@@ -1118,6 +1215,11 @@ async function fetchData(){
 
 async function refresh(){
   const data = await fetchData();
+  window._allRepos = [];
+  try{
+    const repos = await fetch(`${API_BASE}/api/repos`).then(r=>r.json()).catch(()=>({repos:[]}));
+    window._allRepos = repos.repos||[];
+  }catch(e){}
   checkStatusChanges(data.services||[]);
   renderBlueprint(data);
 }
@@ -1139,6 +1241,19 @@ setInterval(refresh, 60000);
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('sw.js').catch(e => console.log('SW:',e));
 }
+
+// Connection panel handlers
+document.getElementById('conn-btn').addEventListener('click',function(){
+  document.getElementById('conn-panel').classList.toggle('show');
+});
+
+document.getElementById('save_conn').addEventListener('click',function(){
+  updateEnvConfig('ngrok_url', document.getElementById('ngrok_input').value);
+  updateEnvConfig('vercel_token', document.getElementById('vercel_input').value);
+  updateEnvConfig('render_token', document.getElementById('render_input').value);
+  document.getElementById('conn-panel').classList.remove('show');
+  alert('Settings saved!');
+});
 </script>
 </body>
 </html>
