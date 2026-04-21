@@ -1494,6 +1494,7 @@ async function refresh(){
   }catch(e){}
   checkStatusChanges(data.services||[]);
   renderBlueprint(data);
+  // Ensure loading hidden
   document.getElementById('loading-state').style.display = 'none';
 }
 
