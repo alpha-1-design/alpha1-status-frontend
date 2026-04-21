@@ -711,22 +711,25 @@ body::after{
   letter-spacing:3px;
 }
 
-/* Metrics Charts */
+/* Metrics Charts - phone-style with expandable details */
 .metrics-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:15px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:12px;
 }
 .metric-card{
   background:var(--paper);border:1px solid var(--zone-b);
-  padding:15px;border-radius:4px;
+  padding:12px;border-radius:4px;
+  cursor:pointer;transition:all .2s;
 }
+.metric-card:hover{border-color:var(--accent);}
+.metric-card.expanded{grid-column:1/-1;}
 .metric-card h4{
   font-family:var(--display);font-size:10px;color:var(--accent);
-  margin-bottom:10px;letter-spacing:1px;
+  margin-bottom:8px;letter-spacing:1px;
 }
 .metric-bar{
-  height:8px;background:rgba(255,255,255,.05);
-  border:1px solid var(--zone-b);margin:8px 0;
+  height:6px;background:rgba(255,255,255,.05);
+  border:1px solid var(--zone-b);margin:6px 0;
   overflow:hidden;border-radius:2px;
 }
 .metric-fill{
@@ -737,38 +740,64 @@ body::after{
 .metric-fill.warn{background:linear-gradient(90deg,var(--orange),var(--yellow));}
 .metric-fill.bad{background:linear-gradient(90deg,var(--red),var(--orange));}
 .metric-stats{
-  display:grid;grid-template-columns:1fr 1fr 1fr;
-  gap:10px;font-family:var(--mono);font-size:8px;
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:8px;font-family:var(--mono);font-size:8px;
 }
 .metric-stat span{display:block;color:var(--dim);}
-.metric-stat strong{color:var(--text);font-size:12px;}
+.metric-stat strong{color:var(--text);font-size:11px;}
+.metric-expanded{display:none;margin-top:12px;padding-top:12px;border-top:1px dashed var(--zone-b);}
+.metric-card.expanded .metric-expanded{display:block;}
+.metric-detail-line{display:flex;justify-content:space-between;font-size:8px;padding:4px 0;}
+.metric-detail-line .label{color:var(--dim);}
+.metric-detail-line .val{color:var(--teal);}
 
-/* Tree View */
+/* Tree View - with animated connectors */
 .tree-container{
-  display:flex;flex-direction:column;align-items:center;gap:10px;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  position:relative;padding:20px 0;
 }
+.tree-svg-lines{
+  position:absolute;inset:0;width:100%;height:100%;pointer-events:none;
+  z-index:0;
+}
+.tree-connector{
+  fill:none;stroke:rgba(30,160,255,0.3);stroke-width:1;
+  stroke-dasharray:4,4;
+  animation:dashMove 1s linear infinite;
+}
+@keyframes dashMove{to{stroke-dashoffset:-8}}
 .tree-node{
-  position:relative;padding:15px 20px;
+  position:relative;padding:12px 16px;
   background:var(--paper);border:1px solid var(--zone-b);
   font-family:var(--mono);font-size:9px;
-  min-width:200px;text-align:center;
+  min-width:180px;text-align:center;
+  z-index:1;
+  cursor:pointer;transition:all .2s;
 }
+.tree-node:hover{border-color:var(--accent);background:rgba(30,160,255,.08);}
+.tree-node.collapsed{min-width:140px;padding:8px 12px;font-size:8px;}
 .tree-node::before{
-  content:'';position:absolute;left:50%;top:-20px;
-  width:1px;height:20px;background:var(--zone-b);
+  content:'';position:absolute;left:50%;top:-14px;
+  width:1px;height:14px;background:var(--zone-b);
 }
 .tree-node:first-child::before{display:none;}
-.tree-line-h{
-  position:absolute;left:50%;top:-20px;width:100px;height:1px;
-  background:var(--zone-b);transform:translateX(-50%);
-}
 .tree-dot{
   width:8px;height:8px;border-radius:50%;
-  display:inline-block;margin-right:8px;
+  display:inline-block;margin-right:6px;
 }
-.tree-dot.online{background:var(--green);box-shadow:0 0 8px var(--green);}
+.tree-dot.online{background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite;}
 .tree-dot.offline{background:var(--red);}
 .tree-dot.degraded{background:var(--orange);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.tree-details{
+  display:none;margin-top:10px;padding:10px;
+  background:rgba(0,0,0,.4);border:1px solid var(--zone-b);
+  font-size:8px;text-align:left;
+}
+.tree-node.active .tree-details{display:block;}
+.tree-details-row{display:flex;justify-content:space-between;padding:3px 0;}
+.tree-details-row .k{color:var(--dim);}
+.tree-details-row .v{color:var(--teal);}
 
 /* Connect View */
 .connect-content{padding:20px 0;}
@@ -796,8 +825,28 @@ body::after{
   font-size:9px;cursor:pointer;
 }
 
-/* Digest */
+/* Digest - live runtime logs */
 .digest-content{padding:20px 0;}
+.digest-stream{
+  background:#000;border:1px solid var(--zone-b);
+  padding:12px;height:300px;overflow-y:auto;
+  font-family:var(--mono);font-size:8px;
+  line-height:1.8;
+}
+.digest-line{
+  display:flex;gap:8px;padding:2px 0;
+  animation:fadeSlideIn .3s ease;
+}
+.digest-line .ts{color:var(--dim);white-space:nowrap;}
+.digest-line .src{color:var(--accent);min-width:60px;}
+.digest-line .msg{color:var(--text);}
+.digest-line .ok{color:var(--green);}
+.digest-line .warn{color:var(--orange);}
+.digest-line .err{color:var(--red);}
+.digest-line .live{
+  color:var(--accent);animation:blink .5s infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 .digest-item{
   border-left:2px solid var(--zone-b);padding-left:15px;
   margin-bottom:20px;font-family:var(--mono);font-size:9px;
@@ -1499,7 +1548,7 @@ async function loadView(view){
     const m = await fetch(`${API_BASE}/api/metrics`).then(r=>r.json()).catch(()=>({metrics:[]}));
     const grid = document.getElementById('metrics-grid');
     grid.innerHTML = m.metrics.map(svc => `
-      <div class="metric-card">
+      <div class="metric-card" onclick="this.classList.toggle('expanded')">
         <h4>${svc.service_name}</h4>
         <div class="metric-bar"><div class="metric-fill ${svc.uptime_pct>90?'good':svc.uptime_pct>70?'warn':'bad'}" style="width:${svc.uptime_pct}%"></div></div>
         <div class="metric-stats">
@@ -1507,56 +1556,80 @@ async function loadView(view){
           <div class="metric-stat"><span>AVG</span><strong>${svc.latency_ms?.avg||'—'}ms</strong></div>
           <div class="metric-stat"><span>MIN</span><strong>${svc.latency_ms?.min||'—'}ms</strong></div>
         </div>
+        <div class="metric-expanded">
+          <div class="metric-detail-line"><span class="label">CURRENT</span><span class="val">${svc.latency_ms?.current||'—'}ms</span></div>
+          <div class="metric-detail-line"><span class="label">MAX</span><span class="val">${svc.latency_ms?.max||'—'}ms</span></div>
+          <div class="metric-detail-line"><span class="label">SAMPLES</span><span class="val">${svc.latency_ms?.samples||0}</span></div>
+          <div class="metric-detail-line"><span class="label">UP</span><span class="val">${Math.floor(svc.uptime_seconds/3600)}h</span></div>
+          <div class="metric-detail-line"><span class="label">DOWN</span><span class="val">${Math.floor(svc.downtime_seconds/3600)}h</span></div>
+        </div>
       </div>
     `).join('');
   }else if(view === 'tree'){
     const data = await fetchData();
+    const svcs = data.services;
+    const total = svcs.length;
+    const w = 280, h = 40 + total * 50;
     const tree = document.getElementById('tree-container');
-    tree.innerHTML = data.services.map(svc => `
-      <div class="tree-node">
-        <span class="tree-dot ${svc.status}"></span>
-        <strong>${svc.name}</strong><br>
-        <span style="color:var(--dim)">${svc.status.toUpperCase()}</span>
-      </div>
-    `).join('');
+    let connectors = '';
+    for(let i=1;i<svcs.length;i++){
+      const y1 = 30 + i*50 - 50;
+      const y2 = 30 + i*50;
+      connectors += `<path class="tree-connector" d="M${w/2},${y1} L${w/2},${y2}" />`;
+    }
+    tree.innerHTML = `
+      <svg class="tree-svg-lines" viewBox="0 0 ${w} ${h}">${connectors}</svg>
+      ${svcs.map((svc,i) => `
+        <div class="tree-node" onclick="this.classList.toggle('collapsed')">
+          <span class="tree-dot ${svc.status}"></span><strong>${svc.name}</strong>
+          <div class="tree-details">
+            <div class="tree-details-row"><span class="k">STATUS</span><span class="v">${svc.status.toUpperCase()}</span></div>
+            <div class="tree-details-row"><span class="k">LATENCY</span><span class="v">${svc.latency_ms||'—'}ms</span></div>
+            <div class="tree-details-row"><span class="k">URL</span><span class="v">${svc.url.replace('https://','').slice(0,30)}</span></div>
+          </div>
+        </div>
+      `).join('')}
+    `;
   }else if(view === 'digest'){
     const inc = await fetch(`${API_BASE}/api/incidents`).then(r=>r.json()).catch(()=>({incidents:[]}));
     const dig = document.getElementById('digest-content');
-    dig.innerHTML = inc.incidents.length ? inc.incidents.map(i => `
-      <div class="digest-item">
-        <div class="time">${i.timestamp}</div>
-        <div class="msg">${i.service_id}: ${i.old_status} �� ${i.new_status}</div>
+    const now = new Date().toISOString().slice(11,19);
+    dig.innerHTML = `
+      <div class="digest-stream" id="log-stream">
+        <div class="digest-line"><span class="ts">[${now}]</span><span class="src">SYSTEM</span><span class="msg live">● MONITORING ACTIVE</span></div>
+        ${inc.incidents.length ? inc.incidents.slice(0,20).map(i => `
+          <div class="digest-line"><span class="ts">[${i.timestamp?.slice(11,19)||'--:--:--'}]</span><span class="src">${i.service_id}</span><span class="msg ${i.new_status==='offline'?'err':i.new_status==='online'?'ok':'warn'}">${i.old_status} → ${i.new_status}</span></div>
+        `).join('') : '<div class="digest-line"><span class="ts">[${now}]</span><span class="src">SYSTEM</span><span class="msg">No incidents logged</span></div>'}
       </div>
-    `).join('') : '<div style="color:var(--dim);font-size:9px;font-family:var(--mono)">No incidents recorded</div>';
+    `;
   }else if(view === 'connect'){
     const conn = document.getElementById('connect-content');
     conn.innerHTML = `
       <div class="connect-item">
-        <h4>LAPTOP / DEVELOPMENT</h4>
-        <p>Run local backend and connect via ngrok or localtunnel</p>
-        <input type="text" id="local_url" placeholder="https://your-ngrok.io">
-        <button id="save_local">Save Local URL</button>
+        <h4>LAPTOP / DEV</h4>
+        <p>ngrok or localtunnel URL for laptop sync</p>
+        <input type="text" id="local_url" placeholder="https://xxx.ngrok.io">
+        <button id="save_local">CONNECT</button>
       </div>
       <div class="connect-item">
         <h4>VERCEL</h4>
-        <p>Token stored in Render env vars</p>
-        <input type="password" id="vercel_tok" placeholder="v1_xxx...">
-        <button>Verify Token</button>
+        <p>Token in Render env vars</p>
+        <div style="color:var(--green);font-size:8px;margin-top:4px;">● CONNECTED</div>
       </div>
       <div class="connect-item">
         <h4>RENDER</h4>
-        <p>API key for backend services</p>
-        <input type="password" id="render_tok" placeholder="rnd_xxx...">
-        <button>Verify Key</button>
+        <p>API key for backends</p>
+        <div style="color:var(--green);font-size:8px;margin-top:4px;">● CONNECTED</div>
       </div>
       <div class="connect-item">
         <h4>RAILWAY</h4>
-        <p>Railway token for deployments</p>
+        <p>Express + MongoDB</p>
         <input type="password" id="railway_tok" placeholder="RFCxxx...">
-        <button>Verify Token</button>
+        <button>VERIFY</button>
       </div>
     `;
   }
+}
 }
 
 // Keyboard shortcuts
