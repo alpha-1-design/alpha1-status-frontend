@@ -306,9 +306,10 @@ body::after{
 .hub-ring{
   position:absolute;
   width:120px;height:120px;
-  border:1px dashed rgba(30,160,255,0.2);
+  border:1px dashed rgba(30,160,255,0.3);
   border-radius:50%;
-  animation:spinRing 20s linear infinite;
+  animation:spinRing 8s linear infinite;
+  box-shadow:0 0 15px rgba(30,160,255,0.15),inset 0 0 10px rgba(30,160,255,0.08);
 }
 @keyframes spinRing{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 .hub-spoke{
@@ -615,18 +616,8 @@ body::after{
 .bp-title h1{animation:textGlitch 5s infinite;}
 
 .code-block{position:relative;overflow:hidden;}
-.code-block::before{
-  content:'';position:absolute;left:0;width:100%;height:2px;
-  background:linear-gradient(90deg,transparent,var(--accent),transparent);
-  animation:scanLine 3s linear infinite;
-}
 
 .zone-label{position:relative;}
-.zone-label::before{
-  content:'';position:absolute;left:0;bottom:0;width:100%;height:1px;
-  background:linear-gradient(90deg,transparent,var(--accent),transparent);
-  animation:gradientShift 3s ease infinite;background-size:200% 100%;
-}
 
 .ext-node-icon{transition:transform 0.3s ease;}
 .ext-node:hover .ext-node-icon{transform:scale(1.2) rotate(10deg);}
@@ -654,11 +645,180 @@ body::after{
   color:var(--text);padding:6px;font-size:9px;font-family:var(--mono);
 }
 .conn-field input:focus{outline:none;border-color:var(--accent);}
+
+/* Morph Floating Button */
+.morph-container{
+  position:fixed;bottom:40px;right:20px;z-index:1000;
+}
+.morph-btn{
+  width:50px;height:50px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--teal));
+  border:none;color:var(--bg);font-size:24px;font-weight:bold;
+  cursor:pointer;box-shadow:0 0 20px rgba(30,160,255,0.5);
+  animation:morphPulse 3s ease-in-out infinite;
+}
+@keyframes morphPulse{
+  0%,100%{box-shadow:0 0 20px rgba(30,160,255,0.5);}
+  50%{box-shadow:0 0 40px rgba(30,160,255,0.8),0 0 60px rgba(0,229,204,0.4);}
+}
+.morph-menu{
+  position:absolute;bottom:60px;right:0;
+  display:none;flex-direction:column;gap:8px;
+  background:var(--paper);border:1px solid var(--zone-b);
+  padding:10px;border-radius:8px;
+}
+.morph-menu.show{display:flex;}
+.morph-opt{
+  background:transparent;border:1px solid var(--zone-b);
+  color:var(--text);padding:10px 20px;font-family:var(--mono);
+  font-size:10px;cursor pointer;text-align:left;
+  border-radius:4px;transition:all .2s;
+}
+.morph-opt:hover{background:rgba(30,160,255,.1);border-color:var(--accent);}
+.morph-lines{
+  position:absolute;bottom:50px;right:25px;width:40px;height:60px;
+  pointer-events:none;opacity:0;
+  transition:opacity .3s;
+}
+.morph-lines.show{ opacity:1; }
+.morph-line{
+  fill:none;stroke:var(--accent);stroke-width:1;
+  stroke-dasharray:200;stroke-dashoffset:200;
+  animation:drawLine 1s ease forwards;
+}
+@keyframes drawLine{ to{stroke-dashoffset:0;} }
+.morph-menu.show ~ .morph-lines path:nth-child(1){animation-delay:0s,0s;}
+.morph-menu.show ~ .morph-lines path:nth-child(2){animation-delay:0.1s,0.1s;}
+.morph-menu.show ~ .morph-lines path:nth-child(3){animation-delay:0.2s,0.2s;}
+
+/* View Panels */
+.view-panel{
+  position:fixed;inset:0;z-index:999;
+  background:var(--bg);overflow-y:auto;
+  padding:60px 20px 100px;
+}
+.view-header{
+  display:flex;align-items:center;gap:15px;margin-bottom:20px;
+}
+.back-btn{
+  background:transparent;border:1px solid var(--zone-b);
+  color:var(--accent);padding:8px 16px;font-family:var(--mono);
+  font-size:9px;cursor:pointer;border-radius:4px;
+}
+.back-btn:hover{background:rgba(30,160,255,.1);}
+.view-header h2{
+  font-family:var(--display);font-size:14px;color:var(--yellow);
+  letter-spacing:3px;
+}
+
+/* Metrics Charts */
+.metrics-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:15px;
+}
+.metric-card{
+  background:var(--paper);border:1px solid var(--zone-b);
+  padding:15px;border-radius:4px;
+}
+.metric-card h4{
+  font-family:var(--display);font-size:10px;color:var(--accent);
+  margin-bottom:10px;letter-spacing:1px;
+}
+.metric-bar{
+  height:8px;background:rgba(255,255,255,.05);
+  border:1px solid var(--zone-b);margin:8px 0;
+  overflow:hidden;border-radius:2px;
+}
+.metric-fill{
+  height:100%;transition:width 1s ease;
+  background:linear-gradient(90deg,var(--accent),var(--teal));
+}
+.metric-fill.good{background:linear-gradient(90deg,var(--green),#00cc66);}
+.metric-fill.warn{background:linear-gradient(90deg,var(--orange),var(--yellow));}
+.metric-fill.bad{background:linear-gradient(90deg,var(--red),var(--orange));}
+.metric-stats{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:10px;font-family:var(--mono);font-size:8px;
+}
+.metric-stat span{display:block;color:var(--dim);}
+.metric-stat strong{color:var(--text);font-size:12px;}
+
+/* Tree View */
+.tree-container{
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+}
+.tree-node{
+  position:relative;padding:15px 20px;
+  background:var(--paper);border:1px solid var(--zone-b);
+  font-family:var(--mono);font-size:9px;
+  min-width:200px;text-align:center;
+}
+.tree-node::before{
+  content:'';position:absolute;left:50%;top:-20px;
+  width:1px;height:20px;background:var(--zone-b);
+}
+.tree-node:first-child::before{display:none;}
+.tree-line-h{
+  position:absolute;left:50%;top:-20px;width:100px;height:1px;
+  background:var(--zone-b);transform:translateX(-50%);
+}
+.tree-dot{
+  width:8px;height:8px;border-radius:50%;
+  display:inline-block;margin-right:8px;
+}
+.tree-dot.online{background:var(--green);box-shadow:0 0 8px var(--green);}
+.tree-dot.offline{background:var(--red);}
+.tree-dot.degraded{background:var(--orange);}
+
+/* Connect View */
+.connect-content{padding:20px 0;}
+.connect-item{
+  background:var(--paper);border:1px solid var(--zone-b);
+  padding:15px;margin-bottom:10px;border-radius:4px;
+}
+.connect-item h4{
+  font-family:var(--display);font-size:11px;color:var(--accent);
+  margin-bottom:8px;
+}
+.connect-item p{
+  font-family:var(--mono);font-size:9px;color:var(--dim);
+  line-height:1.6;
+}
+.connect-item input{
+  width:100%;background:var(--bg);border:1px solid var(--zone-b);
+  color:var(--text);padding:10px;font-size:9px;font-family:var(--mono);
+  margin-top:8px;
+}
+.connect-item button{
+  width:100%;margin-top:10px;padding:10px;
+  background:transparent;border:1px solid var(--accent);
+  color:var(--accent);font-family:var(--mono);
+  font-size:9px;cursor:pointer;
+}
+
+/* Digest */
+.digest-content{padding:20px 0;}
+.digest-item{
+  border-left:2px solid var(--zone-b);padding-left:15px;
+  margin-bottom:20px;font-family:var(--mono);font-size:9px;
+}
+.digest-item .time{color:var(--dim);font-size:8px;}
+.digest-item .msg{color:var(--text);margin-top:5px;}
+.digest-item .status{color:var(--green);font-size:8px;}
+
+/* Mobile Responsive */
+@media(max-width:700px){
+  .bp-grid{grid-template-columns:1fr;}
+  .summary-strip{grid-template-columns:repeat(3,1fr);}
+  .morph-container{bottom:20px;right:15px;}
+  .morph-btn{width:45px;height:45px;font-size:20px;}
+  .tree-node{min-width:150px;font-size:8px;}
+}
 </style>
 </head>
 <body>
 
-<div class="blueprint">
+<div class="blueprint" id="main-view">
 
   <!-- TITLE -->
   <div class="bp-title">
@@ -720,6 +880,58 @@ body::after{
   <div class="ticker" id="ticker">
     <span class="tick-item">MONITORING ACTIVE<span class="tick-sep">◈</span></span>
   </div>
+</div>
+
+<!-- FLOATING MORPH BUTTON -->
+<div class="morph-container" id="morph-container">
+  <button class="morph-btn" id="morph-btn" title="More Options">+</button>
+  <div class="morph-menu" id="morph-menu">
+    <button class="morph-opt" data-view="metrics">Metrics</button>
+    <button class="morph-opt" data-view="tree">Tree</button>
+    <button class="morph-opt" data-view="digest">Digest</button>
+    <button class="morph-opt" data-view="connect">Connect</button>
+  </div>
+  <svg class="morph-lines" id="morph-lines">
+    <path class="morph-line" d="M20,20 Q20,40 20,60" />
+    <path class="morph-line" d="M20,20 Q20,35 20,50" />
+    <path class="morph-line" d="M20,20 Q20,30 20,40" />
+  </svg>
+</div>
+
+<!-- METRICS VIEW -->
+<div class="view-panel" id="metrics-view" style="display:none;">
+  <div class="view-header">
+    <button class="back-btn" data-view="main">Back</button>
+    <h2>METRICS / UPTIME</h2>
+  </div>
+  <div class="metrics-grid" id="metrics-grid"></div>
+</div>
+
+<!-- TREE VIEW -->
+<div class="view-panel" id="tree-view" style="display:none;">
+  <div class="view-header">
+    <button class="back-btn" data-view="main">Back</button>
+    <h2>STATUS TREE</h2>
+  </div>
+  <div class="tree-container" id="tree-container"></div>
+</div>
+
+<!-- DIGEST VIEW -->
+<div class="view-panel" id="digest-view" style="display:none;">
+  <div class="view-header">
+    <button class="back-btn" data-view="main">Back</button>
+    <h2>DAILY DIGEST</h2>
+  </div>
+  <div class="digest-content" id="digest-content"></div>
+</div>
+
+<!-- CONNECT VIEW -->
+<div class="view-panel" id="connect-view" style="display:none;">
+  <div class="view-header">
+    <button class="back-btn" data-view="main">Back</button>
+    <h2>CONNECTIONS</h2>
+  </div>
+  <div class="connect-content" id="connect-content"></div>
 </div>
 
 <script>
@@ -1253,6 +1465,109 @@ document.getElementById('save_conn').addEventListener('click',function(){
   updateEnvConfig('render_token', document.getElementById('render_input').value);
   document.getElementById('conn-panel').classList.remove('show');
   alert('Settings saved!');
+});
+
+// Morph Button & Views
+document.getElementById('morph-btn').addEventListener('click',function(){
+  document.getElementById('morph-menu').classList.toggle('show');
+  document.getElementById('morph-lines').classList.toggle('show');
+});
+
+document.querySelectorAll('.morph-opt').forEach(btn => {
+  btn.addEventListener('click',function(){
+    const view = this.dataset.view;
+    document.getElementById('main-view').style.display = view === 'main' ? 'block' : 'none';
+    document.querySelectorAll('.view-panel').forEach(p => p.style.display = 'none');
+    if(view !== 'main'){
+      document.getElementById(view + '-view').style.display = 'block';
+      loadView(view);
+    }
+    document.getElementById('morph-menu').classList.remove('show');
+    document.getElementById('morph-lines').classList.remove('show');
+  });
+});
+
+document.querySelectorAll('.back-btn').forEach(btn => {
+  btn.addEventListener('click',function(){
+    document.getElementById('main-view').style.display = 'block';
+    document.querySelectorAll('.view-panel').forEach(p => p.style.display = 'none');
+  });
+});
+
+async function loadView(view){
+  if(view === 'metrics'){
+    const m = await fetch(`${API_BASE}/api/metrics`).then(r=>r.json()).catch(()=>({metrics:[]}));
+    const grid = document.getElementById('metrics-grid');
+    grid.innerHTML = m.metrics.map(svc => `
+      <div class="metric-card">
+        <h4>${svc.service_name}</h4>
+        <div class="metric-bar"><div class="metric-fill ${svc.uptime_pct>90?'good':svc.uptime_pct>70?'warn':'bad'}" style="width:${svc.uptime_pct}%"></div></div>
+        <div class="metric-stats">
+          <div class="metric-stat"><span>UPTIME</span><strong>${svc.uptime_pct}%</strong></div>
+          <div class="metric-stat"><span>AVG</span><strong>${svc.latency_ms?.avg||'—'}ms</strong></div>
+          <div class="metric-stat"><span>MIN</span><strong>${svc.latency_ms?.min||'—'}ms</strong></div>
+        </div>
+      </div>
+    `).join('');
+  }else if(view === 'tree'){
+    const data = await fetchData();
+    const tree = document.getElementById('tree-container');
+    tree.innerHTML = data.services.map(svc => `
+      <div class="tree-node">
+        <span class="tree-dot ${svc.status}"></span>
+        <strong>${svc.name}</strong><br>
+        <span style="color:var(--dim)">${svc.status.toUpperCase()}</span>
+      </div>
+    `).join('');
+  }else if(view === 'digest'){
+    const inc = await fetch(`${API_BASE}/api/incidents`).then(r=>r.json()).catch(()=>({incidents:[]}));
+    const dig = document.getElementById('digest-content');
+    dig.innerHTML = inc.incidents.length ? inc.incidents.map(i => `
+      <div class="digest-item">
+        <div class="time">${i.timestamp}</div>
+        <div class="msg">${i.service_id}: ${i.old_status} �� ${i.new_status}</div>
+      </div>
+    `).join('') : '<div style="color:var(--dim);font-size:9px;font-family:var(--mono)">No incidents recorded</div>';
+  }else if(view === 'connect'){
+    const conn = document.getElementById('connect-content');
+    conn.innerHTML = `
+      <div class="connect-item">
+        <h4>LAPTOP / DEVELOPMENT</h4>
+        <p>Run local backend and connect via ngrok or localtunnel</p>
+        <input type="text" id="local_url" placeholder="https://your-ngrok.io">
+        <button id="save_local">Save Local URL</button>
+      </div>
+      <div class="connect-item">
+        <h4>VERCEL</h4>
+        <p>Token stored in Render env vars</p>
+        <input type="password" id="vercel_tok" placeholder="v1_xxx...">
+        <button>Verify Token</button>
+      </div>
+      <div class="connect-item">
+        <h4>RENDER</h4>
+        <p>API key for backend services</p>
+        <input type="password" id="render_tok" placeholder="rnd_xxx...">
+        <button>Verify Key</button>
+      </div>
+      <div class="connect-item">
+        <h4>RAILWAY</h4>
+        <p>Railway token for deployments</p>
+        <input type="password" id="railway_tok" placeholder="RFCxxx...">
+        <button>Verify Token</button>
+      </div>
+    `;
+  }
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown',e => {
+  if(e.target.tagName === 'INPUT') return;
+  if(e.key === 'r') refresh();
+  if(e.key === 's') document.getElementById('conn-panel').classList.toggle('show');
+  if(e.key >= '1' && e.key <= '6'){
+    const svcs = document.querySelectorAll('.svc-block');
+    if(svcs[e.key-1]) svcs[e.key-1].scrollIntoView({behavior:'smooth'});
+  }
 });
 </script>
 </body>
