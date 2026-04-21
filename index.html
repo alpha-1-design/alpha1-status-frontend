@@ -1476,11 +1476,11 @@ async function fetchAllData(){
 
 async function fetchData(){
   try{
-    const r = await fetch(`${API_BASE}/api/status`,{signal:AbortSignal.timeout(12000)});
+    const r = await fetch(`${API_BASE}/api/status`,{signal:AbortSignal.timeout(8000)});
     if(!r.ok) throw new Error(`HTTP ${r.status}`);
     return await r.json();
   }catch(e){
-    console.warn('API unreachable, using fallback data:',e.message);
+    console.warn('API unreachable, using fallback:',e.message);
     return FALLBACK;
   }
 }
@@ -1494,6 +1494,7 @@ async function refresh(){
   }catch(e){}
   checkStatusChanges(data.services||[]);
   renderBlueprint(data);
+  document.getElementById('loading-state').style.display = 'none';
 }
 
 document.getElementById('refresh-btn').addEventListener('click',async function(){
